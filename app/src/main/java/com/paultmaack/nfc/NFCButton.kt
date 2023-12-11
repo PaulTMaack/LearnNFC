@@ -12,11 +12,12 @@ import com.paultmaack.nfc.ui.theme.LearnNFCTheme
 
 @Composable
 fun NFCButton(name: String, modifier: Modifier = Modifier) {
+    var buttonText = name
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { buttonText = "llamas" },
         modifier = modifier.padding(start = 6.dp, end = 6.dp)
     ) {
-        Text(name)
+        Text(buttonText)
     }
 //    Text(
 //        text = "Register $name!",

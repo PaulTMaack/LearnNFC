@@ -4,10 +4,15 @@ import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentFilter
+import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
+import android.nfc.Tag
+import android.nfc.tech.NfcA
 import android.nfc.tech.NfcF
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -85,8 +90,10 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, javaClass).apply {
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
-        var pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent,
-            PendingIntent.FLAG_MUTABLE)
+        var pendingIntent: PendingIntent = PendingIntent.getActivity(
+            this, 0, intent,
+            PendingIntent.FLAG_MUTABLE
+        )
         val ndef = IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED).apply {
             try {
                 addDataType("*/*")    /* Handles all MIME based dispatches.
@@ -102,7 +109,7 @@ class MainActivity : ComponentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-LearnNFCTheme {
+            LearnNFCTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -113,7 +120,8 @@ LearnNFCTheme {
             }
         }
     }
-//    public override fun onPause() {
+
+    //    public override fun onPause() {
 //        super.onPause()
 //        adapter.disableForegroundDispatch(this)
 //    }
@@ -127,6 +135,38 @@ LearnNFCTheme {
 //        val tagFromIntent: Tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
 //        //do something with tagFromIntent
 //    }
+    public override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        Toast.makeText(applicationContext, "I'm on the outside.", Toast.LENGTH_SHORT).show()
+//        val tagFromIntent = intent.getParcelableExtra( NfcAdapter.EXTRA_TAG)
+//        val tagFromIntent = intent?.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG) //?: return
+//
+//        val nfc = NfcA.get(tagFromIntent)
+//
+//        val atqa: ByteArray = nfc.getAtqa()
+//        val sak: Short = nfc.getSak()
+//        nfc.connect()
+//        val isConnected = nfc.isConnected()
+//
+//
+//        if (isConnected) {
+//            val receivedData: ByteArray = nfc.transceive(NFC_READ_COMMAND)
+////        ..
+////        //code to handle the received data
+////        // Received data would be in the form of a byte array that can be converted to string
+////        //NFC_READ_COMMAND would be the custom command you would have to send to your NFC Tag in order to read it
+////        ..
+//        } else {
+//            Log.e("ans", "Not connected")
+//        }
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent?.action) {
+            intent?.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)?.also { rawMessages ->
+                val messages: List<NdefMessage> = rawMessages.map { it as NdefMessage }
+                Toast.makeText(applicationContext, "Value From Message Inside action", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    }
 }
 
 
